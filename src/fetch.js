@@ -335,7 +335,8 @@ export async function fetchAllCommits(token, targetUser = null, repoFilter = 'al
             } catch (err) {
               // Skip branches we can't access
               if (!err.message.includes('409') && !err.message.includes('404')) {
-                console.log(`   ⚠️  Skipping ${repo.name}/${branch.name}: ${err.message}`);
+                const displayName = process.env.CI ? '[repository/branch]' : `${repo.name}/${branch.name}`;
+                console.log(`   ⚠️  Skipping ${displayName}: ${err.message}`);
               }
             }
           }
