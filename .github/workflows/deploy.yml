@@ -37,8 +37,26 @@ jobs:
           node-version: '18'
           cache: 'npm'
       
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      
       - name: Install dependencies
         run: npm ci
+      
+      - name: Cache git data
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/git-history-timeline
+            .cache
+          key: ${{ runner.os }}-git-data-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-git-data-
       
       - name: Generate timeline
         env:
