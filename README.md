@@ -292,45 +292,6 @@ Ensure your token has `repo` scope for private repositories. Organization reposi
 - Check that repositories are accessible with your token
 - Try `--refresh` to bypass cache
 
-## Project Structure
-
-```
-git-history-timeline/
-├── src/
-│   ├── fetch.js       # GitHub API client
-│   ├── aggregate.js   # Commit processing
-│   ├── render.js      # HTML generation
-│   └── index.js       # Main entry point
-├── dist/              # Generated output
-├── .cache/            # API response cache
-├── .env               # GitHub token (git-ignored)
-├── package.json
-├── run.sh
-└── README.md
-```
-
-## Development
-
-**Run locally:**
-
-```bash
-npm install
-node src/index.js
-```
-
-**Command line arguments:**
-
-```bash
-node src/index.js --user octocat --repos owned --cached
-```
-
-**Dependencies:**
-
-- `dotenv` — Environment variable loading
-- Node.js 18+ native `fetch` — HTTP requests
-
-That's it. No build step, no frameworks, no complexity.
-
 ## License
 
 MIT © [kibotu](https://github.com/kibotu)
