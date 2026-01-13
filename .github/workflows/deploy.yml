@@ -48,11 +48,6 @@ jobs:
           # Run the generator (creates both index.html and index-embed.html)
           node src/index.js
       
-      - name: Copy docs to dist
-        run: |
-          # Copy theme demo and screenshots to dist for GitHub Pages
-          cp -r docs dist/
-      
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

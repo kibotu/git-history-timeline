@@ -4,7 +4,7 @@ Visualize your complete GitHub contribution history across all repositories and 
 
 [![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org)
 
-**[🎨 View Live Theme Demo](https://kibotu.github.io/git-history-timeline/theme-demo.html)** | **[📊 See Live Example](https://kibotu.github.io/git-history-timeline/)**
+**[🎨 View Live Theme Demo](docs/theme-demo.html)** | **[📊 See Live Example](https://kibotu.github.io/git-history-timeline/)**
 
 ## What It Does
 
