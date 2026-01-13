@@ -1,20 +1,14 @@
 # Git History Timeline
 
-Visualize your complete GitHub contribution history across all repositories and branches.
+Visualize your complete GitHub contribution history. Every commit, every branch, every repository.
 
 [![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org)
 
-**[🎨 View Live Theme Demo](docs/theme-demo.html)** | **[📊 See Live Example](https://kibotu.github.io/git-history-timeline/)**
+**[View Demo](https://kibotu.github.io/git-history-timeline/)** • **[Try Widget](dist/widget-demo.html)**
 
-## What It Does
+## Why
 
-GitHub's profile shows contributions from default branches only. This tool shows **everything**—every commit from every repository and every branch you've ever touched.
-
-- All branches, not just main/master
-- Private repositories you own or collaborate on
-- Contributions to open source projects
-- Historical data going back years
-- Self-contained HTML you can share or embed
+GitHub's profile shows contributions from default branches only. This shows **everything**.
 
 ## Quick Start
 
@@ -26,66 +20,135 @@ echo "GITHUB_TOKEN=ghp_your_token_here" > .env
 ./run.sh
 ```
 
-Your timeline opens automatically.
+Get your token at [github.com/settings/tokens/new](https://github.com/settings/tokens/new) (needs `repo` and `read:user` scopes).
 
-## Screenshots
+## What You Get
 
-| Light Theme | Dark Theme |
-|-------------|------------|
-| ![Light Theme](docs/screenshot-light.png) | ![Dark Theme](docs/screenshot-dark.png) |
-| Clean, professional look for light backgrounds | Sleek, modern appearance for dark interfaces |
+### Static Timeline (`dist/index.html`)
+Full contribution history with theme toggle and stats.
 
-## Installation
+### Animated Widget (`dist/widget.html`)
+High-velocity animation through 16 years in 30 seconds.
 
-**Requirements:**
-- Node.js 18 or later
-- GitHub Personal Access Token
-
-**1. Get a GitHub Token**
-
-Visit [github.com/settings/tokens/new](https://github.com/settings/tokens/new) and create a token with:
-- `repo` — Access to private repositories
-- `read:user` — Read user profile data
-
-**2. Configure**
-
-```bash
-echo "GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" > .env
+```html
+<iframe 
+  src="widget.html?duration=30&theme=dark"
+  width="100%"
+  height="300"
+  frameborder="0">
+</iframe>
 ```
 
-**3. Run**
+**Widget parameters:**
+- `duration=30` — Animation duration in seconds
+- `theme=dark` — Color theme (`dark` or `light`)
+- `autoplay=true` — Start automatically
+- `speed=1.0` — Playback speed (0.1-10x)
 
-```bash
-./run.sh
-```
+Generate with: `npm run widget`
 
-The tool fetches your commit history and generates `dist/index.html`.
+## Features
 
-## Usage
+- All branches, not just main/master
+- Private repositories you own or collaborate on
+- Contributions to open source projects
+- Historical data going back years
+- Self-contained HTML (share or embed anywhere)
+- Animated widget with rolling 365-day window
+- Dark and light themes
+- Fully responsive (mobile to desktop)
 
-### Basic
-
-```bash
-./run.sh
-```
-
-Generates two files:
-- `dist/index.html` — Full page with theme toggle
-- `dist/index-embed.html` — Embeddable version
-
-### Options
+## Options
 
 ```bash
 ./run.sh --user octocat              # Different user
 ./run.sh --repos owned               # Only repos you own
 ./run.sh --repos forks               # Only forked repos
 ./run.sh --repos contributions       # Only external contributions
-./run.sh --cached                    # Use cached data, skip API calls
+./run.sh --cached                    # Use cached data
 ./run.sh --refresh                   # Force full refresh
 ./run.sh --no-open                   # Don't open browser
 ```
 
-### Repository Filters
+## Embedding
+
+### Static Timeline
+
+```html
+<iframe 
+  src="https://yoursite.com/index-embed.html?theme=dark"
+  width="100%" 
+  height="800" 
+  frameborder="0">
+</iframe>
+```
+
+### Animated Widget
+
+```html
+<iframe 
+  src="https://yoursite.com/widget.html?duration=30&theme=dark"
+  width="100%"
+  height="300"
+  frameborder="0">
+</iframe>
+```
+
+Both support `?theme=dark` or `?theme=light`.
+
+## How It Works
+
+1. Fetches all your repositories via GitHub API
+2. Iterates through every branch in every repository
+3. Collects commit history with author matching
+4. Aggregates by date and calculates contribution levels
+5. Generates self-contained HTML with embedded data
+6. Caches results for faster subsequent runs
+
+First run takes ~5 minutes for large accounts. Subsequent runs take ~30 seconds (incremental updates only).
+
+## Technical Details
+
+- **Node.js 18+** required
+- **GitHub API** for data fetching
+- **Zero dependencies** for generated HTML
+- **Incremental caching** for performance
+- **Rate limit handling** with automatic retries
+- **Parallel processing** for multiple repositories
+- **60fps animation** using requestAnimationFrame
+- **Responsive design** with 6 breakpoints
+
+## Widget Specs
+
+- **16 years** of history in one animation
+- **5,844 days** of commit data
+- **257KB** self-contained file
+- **60 FPS** smooth animation
+- **52×7 grid** showing 365-day rolling window
+- **GitHub-style** contribution colors
+
+## Files Generated
+
+```
+dist/
+├── index.html              # Full page with theme toggle
+├── index-embed.html        # Embeddable version
+├── widget.html             # Animated widget (257KB)
+└── widget-demo.html        # Widget demo page
+```
+
+## Caching
+
+Cache stored in `.cache/commits.json`. Delete to force full refresh or use `--refresh` flag.
+
+```bash
+./run.sh          # First run: ~5 min
+./run.sh          # Second run: ~30 sec (incremental)
+./run.sh --cached # Use cache, skip API calls
+./run.sh --refresh # Force full refresh
+```
+
+## Repository Filters
 
 | Filter | Description |
 |--------|-------------|
@@ -94,221 +157,28 @@ Generates two files:
 | `forks` | Only forked repositories |
 | `contributions` | Only commits to repos you don't own |
 
-### Caching
-
-First run fetches everything. Subsequent runs only fetch updated repositories.
-
-```bash
-./run.sh          # First run: ~5 min for large accounts
-./run.sh          # Second run: ~30 sec (incremental)
-./run.sh --refresh # Force full refresh
-./run.sh --cached  # Use cached data, skip all API calls
-```
-
-Cache stored in `.cache/commits.json`.
-
-## Embedding
-
-The embed version (`index-embed.html`) is designed for portfolios, documentation, and websites.
-
-**Basic iframe:**
-
-```html
-<iframe 
-  src="https://yourusername.github.io/git-history-timeline/index-embed.html" 
-  width="100%" 
-  height="800" 
-  frameborder="0"
-  style="border: 1px solid #30363d; border-radius: 6px;">
-</iframe>
-```
-
-**With auto-height:**
-
-```html
-<iframe 
-  id="timeline"
-  src="https://yourusername.github.io/git-history-timeline/index-embed.html" 
-  width="100%" 
-  frameborder="0">
-</iframe>
-
-<script>
-  window.addEventListener('message', function(event) {
-    if (event.data.type === 'resize') {
-      document.getElementById('timeline').style.height = event.data.height + 'px';
-    }
-  });
-</script>
-```
-
-**Theme control:**
-
-```html
-<!-- Light theme -->
-<iframe src="...?theme=light"></iframe>
-
-<!-- Dark theme -->
-<iframe src="...?theme=dark"></iframe>
-
-<!-- Auto (system preference) -->
-<iframe src="..."></iframe>
-```
-
-### Embed vs Full Version
-
-| Feature | Full | Embed |
-|---------|------|-------|
-| Contribution timeline | ✓ | ✓ |
-| Statistics | ✓ | ✓ |
-| Interactive tooltips | ✓ | ✓ |
-| Dark/light themes | ✓ | ✓ |
-| Theme toggle button | ✓ | — |
-| Header text | ✓ | — |
-| Footer | ✓ | — |
-| Auto-height via postMessage | — | ✓ |
-| Theme via URL parameter | — | ✓ |
-
-## How It Works
-
-1. Authenticate with GitHub API
-2. Fetch all accessible repositories
-3. For each repository, list all branches
-4. For each branch, fetch commits authored by you
-5. Search for external contributions (merged PRs)
-6. Deduplicate commits by SHA
-7. Aggregate by date
-8. Render contribution matrices by year
-9. Output self-contained HTML
-
-**API Usage:**
-- GitHub REST API v3
-- Respects rate limits with exponential backoff
-- Processes repositories in parallel (5 concurrent)
-- Caches responses for subsequent runs
-
-**Performance:**
-
-| Account Size | Time Estimate |
-|--------------|---------------|
-| < 50 repos | ~30 seconds |
-| 50-200 repos | 1-3 minutes |
-| 200+ repos | 3-10 minutes |
-
-Subsequent runs are faster due to incremental caching.
-
-## Deployment
-
-### GitHub Pages
-
-**1. Enable GitHub Pages**
-
-Go to Settings → Pages → Build and deployment → Source: **GitHub Actions**
-
-**2. Add Token Secret**
-
-Go to Settings → Secrets and variables → Actions → New repository secret:
-- Name: `GH_TIMELINE_TOKEN`
-- Value: Your GitHub Personal Access Token
-
-**3. Create Workflow**
-
-Create `.github/workflows/deploy.yml`:
-
-```yaml
-name: Build and Deploy
-
-on:
-  push:
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
-      - '[0-9]+.[0-9]+.[0-9]+-*'
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          
-      - run: npm ci
-      
-      - name: Generate timeline
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TIMELINE_TOKEN }}
-        run: node src/index.js
-        
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
-```
-
-**4. Deploy**
-
-```bash
-git tag 1.0.0
-git push origin 1.0.0
-```
-
-Your timeline will be live at `https://username.github.io/repository-name/`
-
-**Note:** Use semantic versioning **without** `v` prefix: `1.0.0`, not `v1.0.0`.
-
 ## Troubleshooting
 
-**"Error: GITHUB_TOKEN not found"**
+**No commits found:**
+- Check token has `repo` and `read:user` scopes
+- Verify token isn't expired
+- Check rate limits: [github.com/settings/tokens](https://github.com/settings/tokens)
 
-Create `.env` file:
-```bash
-echo "GITHUB_TOKEN=ghp_your_token_here" > .env
-```
+**Rate limit exceeded:**
+- Wait an hour or use `--cached` to work with existing data
+- Authenticated requests get 5,000/hour vs 60/hour unauthenticated
 
-**"Error: Bad credentials"**
-
-Token expired or invalid. [Generate a new one](https://github.com/settings/tokens/new).
-
-**"Rate limit exceeded"**
-
-The tool handles rate limits automatically. For very large accounts, use `--cached` to skip API calls.
-
-**"Missing commits"**
-
-Ensure your token has `repo` scope for private repositories. Organization repositories may require additional permissions.
-
-**Empty or incomplete results**
-
-- Verify token scopes are correct
-- Check that repositories are accessible with your token
-- Try `--refresh` to bypass cache
-
-## Contributing
-
-PRs welcome. Keep it simple, keep it working.
+**Widget not animating:**
+- Check browser console for errors
+- Verify browser supports ES6+ (Chrome 90+, Firefox 88+, Safari 14+)
+- Try `?autoplay=false` to debug
 
 ## License
 
-[Apache License 2.0](LICENSE) — Use it however you want.
+MIT
 
----
+## Credits
 
-Built with ❤️ and the GitHub REST API by [@kibotu](https://medium.com/@kibotu) 
-Every commit counts.
+Built by [@kibotu](https://github.com/kibotu)
+
+Inspired by GitHub's contribution graph but showing the complete picture.

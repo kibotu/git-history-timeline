@@ -167,6 +167,18 @@ fi
 echo ""
 echo -e "${GREEN}✓ Generated: $OUTPUT_FILE${NC}"
 
+# Build animated widget
+echo ""
+echo -e "${BLUE}Building animated widget...${NC}"
+npm run widget --silent
+
+if [ -f "dist/widget.html" ]; then
+    echo -e "${GREEN}✓ Generated: dist/widget.html${NC}"
+    echo -e "${GREEN}✓ Generated: dist/widget-demo.html${NC}"
+else
+    echo -e "${YELLOW}⚠ Widget generation skipped${NC}"
+fi
+
 # Open in browser
 if [ "$OPEN_BROWSER" = true ]; then
     echo -e "${BLUE}Opening in browser...${NC}"

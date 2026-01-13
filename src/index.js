@@ -109,6 +109,8 @@ async function main() {
   
   console.log(`\n✅ Generated: dist/index.html`);
   console.log(`✅ Generated: dist/index-embed.html (embeddable version)`);
+  
+  // Note: Widget is built separately via run.sh or npm run widget
 }
 
 main().catch(err => {

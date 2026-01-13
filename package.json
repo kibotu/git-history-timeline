@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "generate": "node src/index.js"
+    "generate": "node src/index.js",
+    "widget": "node src/extract-widget-data.js && node src/build-widget.js"
   },
   "keywords": [
     "github",
