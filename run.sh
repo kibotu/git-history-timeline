@@ -93,8 +93,11 @@ if [ ! -f ".env" ]; then
     echo -e "${RED}Error: .env file not found${NC}"
     echo ""
     echo "Create one with:"
-    echo "  cp .env.example .env"
-    echo "  # Then add your GitHub token"
+    echo "  echo \"GITHUB_TOKEN=ghp_your_token_here\" > .env"
+    echo ""
+    echo "Generate a token at:"
+    echo "  https://github.com/settings/tokens/new"
+    echo "  (Select 'repo' and 'read:user' scopes)"
     exit 1
 fi
 

@@ -1,379 +1,185 @@
 # Git History Timeline
 
-> Visualize your complete GitHub contribution history across all repositories and branches.
+Visualize your complete GitHub contribution history across all repositories and branches.
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)
-
-<p align="center">
-  <img src="docs/preview.png" alt="Git History Timeline Preview" width="800">
-</p>
-
----
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org)
 
 ## What It Does
 
-Generates a beautiful, GitHub-style contribution timeline showing **every commit** from **every repository** and **every branch** for a GitHub user. Unlike GitHub's profile, this includes:
+GitHub's profile shows contributions from default branches only. This tool shows **everything**—every commit from every repository and every branch you've ever touched.
 
-- ✅ All branches (not just default branch)
-- ✅ Private repositories
-- ✅ Historical data going back years
-- ✅ Self-contained HTML file you can share
-
----
+- All branches, not just main/master
+- Private repositories you own or collaborate on
+- Contributions to open source projects
+- Historical data going back years
+- Self-contained HTML you can share or embed
 
 ## Quick Start
 
 ```bash
-# 1. Clone
 git clone https://github.com/kibotu/git-history-timeline.git
 cd git-history-timeline
-
-# 2. Install
 npm install
-
-# 3. Configure
-cp .env.example .env
-# Edit .env and add your GitHub token
-
-# 4. Run
+echo "GITHUB_TOKEN=ghp_your_token_here" > .env
 ./run.sh
 ```
 
-Your timeline opens automatically in the browser.
+Your timeline opens automatically.
 
----
+## Installation
 
-## Requirements
+**Requirements:**
+- Node.js 18 or later
+- GitHub Personal Access Token
 
-- **Node.js 18+** (uses native fetch)
-- **GitHub Personal Access Token** with `repo` and `read:user` scopes
+**1. Get a GitHub Token**
 
----
+Visit [github.com/settings/tokens/new](https://github.com/settings/tokens/new) and create a token with:
+- `repo` — Access to private repositories
+- `read:user` — Read user profile data
 
-## Configuration
-
-### Creating a GitHub Token
-
-1. Go to [GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)](https://github.com/settings/tokens/new)
-2. Create a new token with these scopes:
-   - `repo` — Full control of private repositories
-   - `read:user` — Read user profile data
-3. Copy the token
-
-### Setting Up `.env`
+**2. Configure**
 
 ```bash
-cp .env.example .env
+echo "GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" > .env
 ```
 
-Edit `.env`:
+**3. Run**
 
-```env
-GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```bash
+./run.sh
 ```
 
----
+The tool fetches your commit history and generates `dist/index.html`.
 
 ## Usage
 
-### Basic Usage
+### Basic
 
 ```bash
 ./run.sh
 ```
 
-This will:
-1. Fetch all repositories you have access to
-2. Retrieve commits from all branches
-3. Generate `dist/index.html` (full page)
-4. Generate `dist/index-embed.html` (embeddable version)
-5. Open the full page in your browser
+Generates two files:
+- `dist/index.html` — Full page with theme toggle
+- `dist/index-embed.html` — Embeddable version
 
 ### Options
 
 ```bash
-# Specify a different user (requires appropriate access)
-./run.sh --user octocat
-
-# Filter by repository type
-./run.sh --repos owned          # Only repos you own (no forks)
-./run.sh --repos forks          # Only forked repositories
-./run.sh --repos contributions  # Only external contributions (PRs to other repos)
-./run.sh --repos all            # Everything (default)
-
-# Skip opening browser
-./run.sh --no-open
-
-# Use full cache (skip all API calls, use last run's data)
-./run.sh --cached
-
-# Force full refresh (ignore incremental cache)
-./run.sh --refresh
-
-# Combine options
-./run.sh --repos owned --no-open
-```
-
-### Incremental Caching
-
-The tool caches repository data to speed up subsequent runs:
-
-- First run fetches all repositories and commits
-- Subsequent runs only fetch repos that have new pushes
-- Cache stored in `.cache/repos.json`
-
-```bash
-# First run: fetches everything (~5 min for large accounts)
-./run.sh
-
-# Second run: only fetches updated repos (~30 sec)
-./run.sh
-
-# Force complete refresh
-./run.sh --refresh
+./run.sh --user octocat              # Different user
+./run.sh --repos owned               # Only repos you own
+./run.sh --repos forks               # Only forked repos
+./run.sh --repos contributions       # Only external contributions
+./run.sh --cached                    # Use cached data, skip API calls
+./run.sh --refresh                   # Force full refresh
+./run.sh --no-open                   # Don't open browser
 ```
 
 ### Repository Filters
 
 | Filter | Description |
 |--------|-------------|
-| `all` | All repos + external contributions (default) |
-| `owned` | Repositories you own, excluding forks |
-| `forks` | Only repositories you forked from others |
-| `contributions` | Only commits to repos you don't own (merged PRs) |
+| `all` | Everything (default) |
+| `owned` | Repos you own, excluding forks |
+| `forks` | Only forked repositories |
+| `contributions` | Only commits to repos you don't own |
 
----
+### Caching
 
-## Output
+First run fetches everything. Subsequent runs only fetch updated repositories.
 
-The tool generates two self-contained HTML files:
+```bash
+./run.sh          # First run: ~5 min for large accounts
+./run.sh          # Second run: ~30 sec (incremental)
+./run.sh --refresh # Force full refresh
+./run.sh --cached  # Use cached data, skip all API calls
+```
 
-### `dist/index.html` (Full Page)
-- Complete standalone page with header and footer
-- Year-by-year contribution matrices
-- Total commit counts
-- Interactive tooltips
-- Dark/light theme toggle
-- Zero external dependencies
-
-### `dist/index-embed.html` (Embeddable)
-- Same visualization without header title and theme toggle
-- No footer
-- Perfect for embedding in other pages or iframes
-- Includes username and stats bar
-- Minimal chrome for clean embedding
-- **Theme control via URL**: `?theme=light` or `?theme=dark`
-- **Auto-height support**: Automatically resizes iframe to content height
-
-Share it, host it, or keep it local — each is just one file.
-
----
+Cache stored in `.cache/commits.json`.
 
 ## Embedding
 
-The `index-embed.html` file is designed for embedding in other pages:
+The embed version (`index-embed.html`) is designed for portfolios, documentation, and websites.
 
-### Using an iframe
-
-**With auto-height (recommended):**
+**Basic iframe:**
 
 ```html
 <iframe 
-  id="git-timeline"
-  src="https://yourusername.github.io/git-history-timeline/index-embed.html?theme=dark" 
+  src="https://yourusername.github.io/git-history-timeline/index-embed.html" 
   width="100%" 
+  height="800" 
   frameborder="0"
   style="border: 1px solid #30363d; border-radius: 6px;">
 </iframe>
+```
+
+**With auto-height:**
+
+```html
+<iframe 
+  id="timeline"
+  src="https://yourusername.github.io/git-history-timeline/index-embed.html" 
+  width="100%" 
+  frameborder="0">
+</iframe>
 
 <script>
-  // Auto-resize iframe to content height
   window.addEventListener('message', function(event) {
     if (event.data.type === 'resize') {
-      document.getElementById('git-timeline').style.height = event.data.height + 'px';
+      document.getElementById('timeline').style.height = event.data.height + 'px';
     }
   });
 </script>
 ```
 
-**Or with fixed height:**
+**Theme control:**
 
 ```html
-<iframe 
-  src="https://yourusername.github.io/git-history-timeline/index-embed.html?theme=light" 
-  width="100%" 
-  height="800" 
-  frameborder="0"
-  style="border: 1px solid #d0d7de; border-radius: 6px;">
-</iframe>
+<!-- Light theme -->
+<iframe src="...?theme=light"></iframe>
+
+<!-- Dark theme -->
+<iframe src="...?theme=dark"></iframe>
+
+<!-- Auto (system preference) -->
+<iframe src="..."></iframe>
 ```
 
-### Theme Configuration
+### Embed vs Full Version
 
-Control the theme via URL parameter:
-- `?theme=light` - Force light theme (perfect for light-colored sites)
-- `?theme=dark` - Force dark theme (perfect for dark-colored sites)
-- No parameter - Auto-detect from system preference
-
-### Direct inclusion
-
-Since it's a self-contained HTML file, you can also:
-- Include it directly in documentation
-- Embed it in your portfolio
-- Add it to your personal website
-- Share it in presentations
-
-The embed version excludes:
-- ❌ "Git History Timeline" header text
-- ❌ Theme toggle button
-- ❌ Footer with links
-
-But includes:
-- ✅ Username display
-- ✅ Commit/repo/year statistics
-- ✅ Full contribution timeline
-- ✅ Interactive tooltips
-- ✅ Responsive design
-
-📖 **[Read the full Embedding Guide](docs/EMBEDDING.md)** for more examples and customization options.
-
----
+| Feature | Full | Embed |
+|---------|------|-------|
+| Contribution timeline | ✓ | ✓ |
+| Statistics | ✓ | ✓ |
+| Interactive tooltips | ✓ | ✓ |
+| Dark/light themes | ✓ | ✓ |
+| Theme toggle button | ✓ | — |
+| Header text | ✓ | — |
+| Footer | ✓ | — |
+| Auto-height via postMessage | — | ✓ |
+| Theme via URL parameter | — | ✓ |
 
 ## How It Works
 
-```
 1. Authenticate with GitHub API
 2. Fetch all accessible repositories
-3. For each repo, list all branches
+3. For each repository, list all branches
 4. For each branch, fetch commits authored by you
-5. Deduplicate commits (same commit appears on multiple branches)
-6. Aggregate by date
-7. Render contribution matrices by year
-8. Output static HTML
-```
+5. Search for external contributions (merged PRs)
+6. Deduplicate commits by SHA
+7. Aggregate by date
+8. Render contribution matrices by year
+9. Output self-contained HTML
 
-### API Usage
-
-- Uses GitHub REST API v3
+**API Usage:**
+- GitHub REST API v3
 - Respects rate limits with exponential backoff
-- Caches responses to speed up subsequent runs
 - Processes repositories in parallel (5 concurrent)
+- Caches responses for subsequent runs
 
----
-
-## Project Structure
-
-```
-git-history-timeline/
-├── src/
-│   ├── fetch.js          # GitHub API client
-│   ├── aggregate.js      # Commit processing
-│   ├── render.js         # HTML generation (full & embed)
-│   └── index.js          # Main entry point
-├── dist/
-│   ├── index.html        # Full page output
-│   └── index-embed.html  # Embeddable output
-├── docs/
-│   └── EMBEDDING.md      # Embedding guide
-├── spec/
-│   └── SPEC.md           # Technical specification
-├── .github/
-│   └── workflows/
-│       └── deploy.yml    # GitHub Pages deployment
-├── .env.example          # Example configuration
-├── package.json
-├── run.sh                # Easy run script
-├── RELEASING.md          # Release guide
-└── README.md
-```
-
----
-
-## GitHub Pages Deployment
-
-This project includes a GitHub Action that automatically builds and deploys your timeline to GitHub Pages.
-
-### Setup
-
-1. **Enable GitHub Pages** in your repository:
-   - Go to Settings → Pages
-   - Under "Build and deployment", select **GitHub Actions** as the source
-
-2. **Add GitHub Token Secret**:
-   - Go to Settings → Secrets and variables → Actions
-   - Click "New repository secret"
-   - Name: `GH_TIMELINE_TOKEN`
-   - Value: Your GitHub Personal Access Token (with `repo` and `read:user` scopes)
-
-3. **Trigger Deployment**:
-   
-   Create and push a release tag with semantic versioning (without `v` prefix):
-   
-   ```bash
-   git tag 1.0.0
-   git push origin 1.0.0
-   ```
-   
-   Or manually trigger from the Actions tab.
-
-Your timeline will be available at: `https://<username>.github.io/<repository-name>/`
-
-### Release Versioning
-
-The workflow triggers on semantic version tags **without** the `v` prefix:
-
-- ✅ Valid: `1.0.0`, `2.1.3`, `1.0.0-beta.1`, `3.2.1-rc.2`
-- ❌ Invalid: `v1.0.0`, `v2.1.3`, `release-1.0.0`
-
-```bash
-# Create a release
-git tag 1.0.0
-git push origin 1.0.0
-
-# Pre-release versions also work
-git tag 2.0.0-beta.1
-git push origin 2.0.0-beta.1
-```
-
-### About the Token
-
-**Important:** The GitHub Action needs **two tokens**:
-
-1. **`GITHUB_TOKEN`** (automatic) - Used by GitHub Actions to deploy to Pages. This is automatically provided by GitHub and requires no setup.
-
-2. **`GH_TIMELINE_TOKEN`** (manual) - Used to fetch your git history from the GitHub API. You must add this as a repository secret.
-
-The workflow automatically runs when you push a semantic version tag (without `v` prefix), or you can trigger it manually from the Actions tab.
-
----
-
-## Troubleshooting
-
-### "Error: GITHUB_TOKEN not found"
-
-Make sure you've created a `.env` file with your token:
-
-```bash
-cp .env.example .env
-# Then edit .env and add your token
-```
-
-### "Error: Bad credentials"
-
-Your token may have expired or been revoked. [Generate a new one](https://github.com/settings/tokens/new).
-
-### "Rate limit exceeded"
-
-The tool automatically handles rate limits, but for very large accounts, you may need to wait. Run with `--cached` to use previously fetched data.
-
-### "Missing commits"
-
-Ensure your token has the `repo` scope for private repositories. Commits from organizations may require additional permissions.
-
----
-
-## Performance
+**Performance:**
 
 | Account Size | Time Estimate |
 |--------------|---------------|
@@ -381,16 +187,149 @@ Ensure your token has the `repo` scope for private repositories. Commits from or
 | 50-200 repos | 1-3 minutes |
 | 200+ repos | 3-10 minutes |
 
-Subsequent runs are faster due to caching.
+Subsequent runs are faster due to incremental caching.
 
----
+## Deployment
 
-## Related Projects
+### GitHub Pages
 
-- [GitHub Contributions Chart Generator](https://github.com/sallar/github-contributions-chart) — Similar concept, different approach
-- [git-stats](https://github.com/IonicaBizau/git-stats) — Local git statistics
+**1. Enable GitHub Pages**
 
----
+Go to Settings → Pages → Build and deployment → Source: **GitHub Actions**
+
+**2. Add Token Secret**
+
+Go to Settings → Secrets and variables → Actions → New repository secret:
+- Name: `GH_TIMELINE_TOKEN`
+- Value: Your GitHub Personal Access Token
+
+**3. Create Workflow**
+
+Create `.github/workflows/deploy.yml`:
+
+```yaml
+name: Build and Deploy
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - run: npm ci
+      
+      - name: Generate timeline
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TIMELINE_TOKEN }}
+        run: node src/index.js
+        
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+**4. Deploy**
+
+```bash
+git tag 1.0.0
+git push origin 1.0.0
+```
+
+Your timeline will be live at `https://username.github.io/repository-name/`
+
+**Note:** Use semantic versioning **without** `v` prefix: `1.0.0`, not `v1.0.0`.
+
+## Troubleshooting
+
+**"Error: GITHUB_TOKEN not found"**
+
+Create `.env` file:
+```bash
+echo "GITHUB_TOKEN=ghp_your_token_here" > .env
+```
+
+**"Error: Bad credentials"**
+
+Token expired or invalid. [Generate a new one](https://github.com/settings/tokens/new).
+
+**"Rate limit exceeded"**
+
+The tool handles rate limits automatically. For very large accounts, use `--cached` to skip API calls.
+
+**"Missing commits"**
+
+Ensure your token has `repo` scope for private repositories. Organization repositories may require additional permissions.
+
+**Empty or incomplete results**
+
+- Verify token scopes are correct
+- Check that repositories are accessible with your token
+- Try `--refresh` to bypass cache
+
+## Project Structure
+
+```
+git-history-timeline/
+├── src/
+│   ├── fetch.js       # GitHub API client
+│   ├── aggregate.js   # Commit processing
+│   ├── render.js      # HTML generation
+│   └── index.js       # Main entry point
+├── dist/              # Generated output
+├── .cache/            # API response cache
+├── .env               # GitHub token (git-ignored)
+├── package.json
+├── run.sh
+└── README.md
+```
+
+## Development
+
+**Run locally:**
+
+```bash
+npm install
+node src/index.js
+```
+
+**Command line arguments:**
+
+```bash
+node src/index.js --user octocat --repos owned --cached
+```
+
+**Dependencies:**
+
+- `dotenv` — Environment variable loading
+- Node.js 18+ native `fetch` — HTTP requests
+
+That's it. No build step, no frameworks, no complexity.
 
 ## License
 
@@ -398,12 +337,4 @@ MIT © [kibotu](https://github.com/kibotu)
 
 ---
 
-## Acknowledgments
-
-Built with the GitHub REST API. Inspired by GitHub's contribution graph and the desire to see the complete picture.
-
----
-
-<p align="center">
-  <i>Keep shipping. Every commit counts.</i>
-</p>
+Built with the GitHub REST API. Every commit counts.
