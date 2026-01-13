@@ -195,7 +195,10 @@ async function searchCommitsByAuthor(username, token, commitMap, repoSet) {
         }
       }
       
-      process.stdout.write(`\r   Searched ${page * 100} of ${Math.min(totalFound, 1000)} commits...`);
+      // Show progress only in interactive terminals (not in CI)
+      if (process.stdout.isTTY && !process.env.CI) {
+        process.stdout.write(`\r   Searched ${page * 100} of ${Math.min(totalFound, 1000)} commits...`);
+      }
       
       // Check if we've got all results
       if (data.items.length < 100 || page * 100 >= totalFound) {
@@ -213,7 +216,10 @@ async function searchCommitsByAuthor(username, token, commitMap, repoSet) {
     }
   }
   
-  process.stdout.write('\r' + ' '.repeat(60) + '\r');
+  // Clear progress line (only if we were showing progress)
+  if (process.stdout.isTTY && !process.env.CI) {
+    process.stdout.write('\r' + ' '.repeat(60) + '\r');
+  }
   console.log(`✓ Found ${newCommits} additional commits from ${totalFound} total public contributions`);
   
   return newCommits;
