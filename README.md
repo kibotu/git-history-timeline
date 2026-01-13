@@ -2,7 +2,6 @@
 
 Visualize your complete GitHub contribution history across all repositories and branches.
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org)
 
 ## What It Does
