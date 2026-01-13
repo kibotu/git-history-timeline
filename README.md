@@ -26,6 +26,15 @@ echo "GITHUB_TOKEN=ghp_your_token_here" > .env
 
 Your timeline opens automatically.
 
+## Screenshots
+
+| Light Theme | Dark Theme |
+|-------------|------------|
+| ![Light Theme](docs/screenshot-light.png) | ![Dark Theme](docs/screenshot-dark.png) |
+| Clean, professional look for light backgrounds | Sleek, modern appearance for dark interfaces |
+
+**[🎨 View Live Theme Demo](https://kibotu.github.io/git-history-timeline/theme-demo.html)**
+
 ## Installation
 
 **Requirements:**
