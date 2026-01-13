@@ -291,10 +291,15 @@ Ensure your token has `repo` scope for private repositories. Organization reposi
 - Check that repositories are accessible with your token
 - Try `--refresh` to bypass cache
 
+## Contributing
+
+PRs welcome. Keep it simple, keep it working.
+
 ## License
 
-MIT © [kibotu](https://github.com/kibotu)
+[Apache License 2.0](LICENSE) — Use it however you want.
 
 ---
 
-Built with the GitHub REST API. Every commit counts.
+Built with ❤️ and the GitHub REST API by [@kibotu](https://medium.com/@kibotu) 
+Every commit counts.
