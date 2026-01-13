@@ -4,6 +4,8 @@ Visualize your complete GitHub contribution history across all repositories and 
 
 [![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org)
 
+**[🎨 View Live Theme Demo](https://kibotu.github.io/git-history-timeline/theme-demo.html)** | **[📊 See Live Example](https://kibotu.github.io/git-history-timeline/)**
+
 ## What It Does
 
 GitHub's profile shows contributions from default branches only. This tool shows **everything**—every commit from every repository and every branch you've ever touched.
@@ -32,8 +34,6 @@ Your timeline opens automatically.
 |-------------|------------|
 | ![Light Theme](docs/screenshot-light.png) | ![Dark Theme](docs/screenshot-dark.png) |
 | Clean, professional look for light backgrounds | Sleek, modern appearance for dark interfaces |
-
-**[🎨 View Live Theme Demo](https://kibotu.github.io/git-history-timeline/theme-demo.html)**
 
 ## Installation
 
