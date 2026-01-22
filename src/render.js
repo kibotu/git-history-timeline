@@ -389,7 +389,8 @@ function renderTimelineHTML({ username, commits, totalCommits, repoCount, embed 
       border-radius: 6px;
       font-size: 0.7rem;
       font-family: 'SF Mono', Monaco, Menlo, Consolas, 'Liberation Mono', 'Courier New', monospace;
-      white-space: nowrap;
+      white-space: pre-wrap;
+      max-width: 300px;
       pointer-events: none;
       border: 1px solid var(--border-color);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -640,7 +641,7 @@ ${footerContent}
  * Render a single year section
  */
 function renderYear(year, commits) {
-  const calendar = generateYearCalendar(year, commits.byYear, commits.yearMaxDaily);
+  const calendar = generateYearCalendar(year, commits.byYear, commits.yearMaxDaily, commits.reposByDate);
   const yearTotal = commits.yearTotals[year] || 0;
   
   // Generate month labels
@@ -653,9 +654,10 @@ function renderYear(year, commits) {
         return '<div class="day outside"></div>';
       }
       
+      const repoList = day.repos.length > 0 ? day.repos.join(', ') : '';
       const tooltip = day.count === 0
         ? `No commits on ${formatDate(day.date)}`
-        : `${day.count} commit${day.count === 1 ? '' : 's'} on ${formatDate(day.date)}`;
+        : `${day.count} commit${day.count === 1 ? '' : 's'} on ${formatDate(day.date)}${repoList ? '&#10;' + repoList : ''}`;
       
       return `<div class="day level-${day.level}" data-tooltip="${tooltip}" data-date="${day.date}"></div>`;
     }).join('');
