@@ -10,23 +10,30 @@
 export function aggregateCommits(commits) {
   const byDate = {};      // "2025-01-13" -> count
   const byYear = {};      // "2025" -> { "2025-01-13" -> count, ... }
+  const reposByDate = {}; // "2025-01-13" -> Set of repo names
   const repoSet = new Set();
-  
+
   for (const commit of commits) {
     // Parse date in UTC
     const date = new Date(commit.date);
     const dateKey = date.toISOString().split('T')[0]; // "2025-01-13"
     const year = dateKey.substring(0, 4);
-    
+
     // Count by date
     byDate[dateKey] = (byDate[dateKey] || 0) + 1;
-    
+
+    // Track repos by date
+    if (!reposByDate[dateKey]) {
+      reposByDate[dateKey] = new Set();
+    }
+    reposByDate[dateKey].add(commit.repo);
+
     // Organize by year
     if (!byYear[year]) {
       byYear[year] = {};
     }
     byYear[year][dateKey] = (byYear[year][dateKey] || 0) + 1;
-    
+
     // Track repos
     repoSet.add(commit.repo);
   }
@@ -41,9 +48,16 @@ export function aggregateCommits(commits) {
     yearMaxDaily[year] = Math.max(...yearDailyCounts, 0);
   }
   
+  // Convert Sets to arrays for JSON serialization
+  const reposByDateArrays = {};
+  for (const [dateKey, repos] of Object.entries(reposByDate)) {
+    reposByDateArrays[dateKey] = Array.from(repos);
+  }
+
   return {
     byDate,
     byYear,
+    reposByDate: reposByDateArrays,
     yearTotals,
     yearMaxDaily,  // Per-year max for proper color scaling
     repoCount: repoSet.size,
@@ -76,12 +90,13 @@ export function getContributionLevel(count, maxDaily) {
 /**
  * Generate calendar data for a year
  * Returns an array of weeks, each containing 7 days
- * 
+ *
  * @param {string} year - The year to generate
  * @param {object} byYear - Commits organized by year
  * @param {object} yearMaxDaily - Per-year max daily commits for color scaling
+ * @param {object} reposByDate - Repos committed to per date
  */
-export function generateYearCalendar(year, byYear, yearMaxDaily) {
+export function generateYearCalendar(year, byYear, yearMaxDaily, reposByDate = {}) {
   const yearData = byYear[year] || {};
   const maxDaily = yearMaxDaily[year] || 1; // Use THIS year's max for color scaling
   const weeks = [];
@@ -109,7 +124,8 @@ export function generateYearCalendar(year, byYear, yearMaxDaily) {
         date: dateKey,
         count,
         level: inYear ? getContributionLevel(count, maxDaily) : -1,
-        inYear
+        inYear,
+        repos: inYear ? (reposByDate[dateKey] || []) : []
       });
       
       currentDate.setUTCDate(currentDate.getUTCDate() + 1);
